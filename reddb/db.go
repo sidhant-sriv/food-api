@@ -10,14 +10,20 @@ import (
 var rdb *redis.Client
 
 func init() {
+    fmt.Println("Attempting to create Redis client")
     rdb = redis.NewClient(&redis.Options{
-        Addr:     "localhost:6379",
+        Addr:     "redis:6379",
         Password: "",
         DB:       0,
     })
-    fmt.Print("Redis client created")
-}
 
+    _, err := rdb.Ping(context.Background()).Result()
+    if err != nil {
+        fmt.Println("Failed to create Redis client:", err)
+    } else {
+        fmt.Println("Redis client created")
+    }
+}
 func SetOrder(orderID, orderStatus string) error {
     return rdb.Set(context.Background(), orderID, orderStatus, 0).Err()
 }
